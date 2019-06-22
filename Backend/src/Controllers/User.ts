@@ -20,7 +20,6 @@ export class UserController {
 	@Post('validate')
 	private async postUsername(req: Request, res: Response) {
 		const { token, username } = req.body;
-		console.log(req.body);
 		const user = new TokenToUser(token, username);
 		const v = await user.validate();
 		if (!v) return res.json({ error: 'You are not logged in.' });

@@ -2,6 +2,7 @@ import { Schema, model, Document } from 'mongoose';
 import { UserType } from '../Types/UserType';
 import { TokenType } from '../Types/TokenType';
 import { Token, TokenModel } from './TokenModel';
+import { hash, compare } from 'bcryptjs';
 
 const user = new Schema({
 	name: {
@@ -26,6 +27,7 @@ export const UserModel = model<UserDoc>('users', user);
 interface UserDoc extends Document, UserType {}
 
 export class User {
+	private doc?: UserDoc;
 	constructor(private user: UserType) {
 		this.user = user;
 	}
@@ -44,6 +46,16 @@ export class User {
 	public login(): Promise<TokenType> {
 		const token = new Token(this.user);
 		return token.save();
+	}
+	public async hash() {
+		console.log(this.user.password);
+		this.user.password = await hash(this.user.password, 10);
+		console.log(this.user.password);
+	}
+	public async compare() {
+		const doc = await UserModel.findOne({ username: this.user.username });
+		if (!doc) return false;
+		return compare(this.user.password, doc.password);
 	}
 
 	public async save() {

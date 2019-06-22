@@ -7,15 +7,16 @@ export class SignupController {
 	@Post()
 	private async postRoot(req: Request, res: Response) {
 		const user = new User(req.body);
-		console.log(req.body);
+		await user.hash();
 		if (await user.validateEach())
 			return res.json({
 				error: 'Account with that email/username already exists'
 			});
-		await user.save();
+		const u = await user.save();
 		return res.json({
 			success:
-				'Account successfully created. You may now use it to login.'
+				'Account successfully created. You may now use it to login.',
+			user: u
 		});
 	}
 }
