@@ -1,4 +1,4 @@
-export const Logout = (token, username) =>
+export const Logout = (token, username, forced) =>
 	fetch('http://localhost:5000/logout', {
 		method: 'POST',
 		body: JSON.stringify({ username, token }),
@@ -8,5 +8,5 @@ export const Logout = (token, username) =>
 	})
 		.then(res => res.json())
 		.then(() => {
-			window.location.href = '/';
+			if (!forced) window.location.href = '/';
 		});

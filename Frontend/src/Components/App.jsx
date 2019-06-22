@@ -18,15 +18,15 @@ export class App extends Component {
 	async componentDidMount() {
 		const { token, username, expiration } = this.state;
 		if (expiration <= Date.now()) {
-			Logout(token, username);
+			Logout(token, username, true);
 			return this.logoutState();
 		}
 		if (!(await CheckIsLoggedIn(token, username))) {
-			Logout(token, username);
+			Logout(token, username, true);
 			return this.logoutState();
 		}
 	}
-	logoutState() {
+	logoutState = () => {
 		localStorage.removeItem('token');
 		localStorage.removeItem('username');
 		localStorage.removeItem('expiration');
@@ -35,7 +35,7 @@ export class App extends Component {
 			username: 'Account',
 			expiration: null
 		});
-	}
+	};
 
 	loginHandler = (token, username, expiration) => {
 		this.setState({
@@ -46,6 +46,7 @@ export class App extends Component {
 		localStorage.setItem('token', token);
 		localStorage.setItem('username', username);
 		localStorage.setItem('expiration', expiration);
+		window.location.href = '/';
 	};
 	render() {
 		return (
@@ -54,10 +55,9 @@ export class App extends Component {
 					username={this.state.username}
 					isLoggedIn={this.isLoggedIn}
 					token={this.state.token}
-					// loginHandler={this.loginHandler}
+					logoutHandler={this.logoutState}
 				/>
 				<Route exact path='/' component={Home} />
-				{/* <Route path='/signup' component={} /> */}
 				<Route
 					exact
 					path='/login'
@@ -65,7 +65,10 @@ export class App extends Component {
 						this.isLoggedIn ? (
 							<Home />
 						) : (
-							<Login loginHandler={this.loginHandler} />
+							<Login
+								loginHandler={this.loginHandler}
+								logoutHandler={this.logoutState}
+							/>
 						)
 					}
 				/>

@@ -22,14 +22,16 @@ import { Logout } from '../../Util/Logout';
 export class NavBar extends Component {
 	state = {
 		username: this.props.username,
-		isLoggedIn: this.props.isLoggedIn,
-		...this.props
+		isLoggedIn: this.props.isLoggedIn
 	};
 	loggedInItems = (
 		<>
 			<DropdownItem>Profile</DropdownItem>
 			<DropdownItem
-				onClick={() => Logout(this.state.token, this.state.username)}>
+				onClick={() => {
+					Logout(this.state.token, this.state.username, false);
+					this.props.logoutHandler();
+				}}>
 				Logout
 			</DropdownItem>
 		</>

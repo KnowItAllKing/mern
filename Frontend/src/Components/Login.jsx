@@ -21,8 +21,7 @@ export class Login extends Component {
 		});
 	onSubmit = async () => {
 		const res = await LoginFunc(this.state.username, this.state.password);
-		if (!res)
-			return this.setState({ username: '', password: '', invalid: true });
+		if (!res) return this.props.logoutHandler();
 		this.props.loginHandler(res.token, res.username, res.expiration);
 	};
 	render() {
