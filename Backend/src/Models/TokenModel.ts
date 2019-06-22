@@ -11,8 +11,7 @@ const token = new Schema({
 	},
 	username: {
 		type: String,
-		required: true,
-		unique: true
+		required: true
 	},
 	expiration: {
 		type: Number,
@@ -73,7 +72,20 @@ export class TokenToUser {
 		const doc = await UserModel.findOne({ username: this.username });
 		this.user = doc;
 	}
-	public logout() {
-		TokenModel.findOneAndDelete({ token: this.token });
+	public async logout() {
+		try {
+			var doc = await TokenModel.findOneAndDelete({ token: this.token });
+		} catch (e) {
+			return false;
+		}
+		if (!doc) return false;
+		return true;
+	}
+	public async validate() {
+		const doc = await TokenModel.findOne({
+			token: this.token,
+			username: this.username
+		});
+		return doc || false;
 	}
 }

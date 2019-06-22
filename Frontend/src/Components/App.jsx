@@ -1,22 +1,75 @@
 import React, { Component } from 'react';
+import { Route } from 'react-router-dom';
+
 import { Logout } from '../Util/Logout';
+
+import { NavBar } from './Layout/Navbar';
+import { Login } from './Login';
+import { Home } from './Home';
+import { CheckIsLoggedIn } from '../Util/CheckUser';
 
 export class App extends Component {
 	state = {
 		token: localStorage.getItem('token'),
-		username: localStorage.getItem('username'),
+		username: localStorage.getItem('username') || 'Account',
 		expiration: localStorage.getItem('expiration')
 	};
+	isLoggedIn = this.state.username !== 'Account';
 	async componentDidMount() {
 		const { token, username, expiration } = this.state;
-		if (!token || !username || expiration) return;
-		if (expiration <= Date.now())
-			return Logout(this.state.token, this.state.username);
+		if (expiration <= Date.now()) {
+			Logout(token, username);
+			return this.logoutState();
+		}
+		if (!(await CheckIsLoggedIn(token, username))) {
+			Logout(token, username);
+			return this.logoutState();
+		}
 	}
+	logoutState() {
+		localStorage.removeItem('token');
+		localStorage.removeItem('username');
+		localStorage.removeItem('expiration');
+		this.setState({
+			token: null,
+			username: 'Account',
+			expiration: null
+		});
+	}
+
+	loginHandler = (token, username, expiration) => {
+		this.setState({
+			token,
+			username,
+			expiration
+		});
+		localStorage.setItem('token', token);
+		localStorage.setItem('username', username);
+		localStorage.setItem('expiration', expiration);
+	};
 	render() {
-        return (
-            <>
-            </>
-        );
-    }
+		return (
+			<>
+				<NavBar
+					username={this.state.username}
+					isLoggedIn={this.isLoggedIn}
+					token={this.state.token}
+					// loginHandler={this.loginHandler}
+				/>
+				<Route exact path='/' component={Home} />
+				{/* <Route path='/signup' component={} /> */}
+				<Route
+					exact
+					path='/login'
+					component={() =>
+						this.isLoggedIn ? (
+							<Home />
+						) : (
+							<Login loginHandler={this.loginHandler} />
+						)
+					}
+				/>
+			</>
+		);
+	}
 }

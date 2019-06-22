@@ -1,63 +1,63 @@
 import React, { Component } from 'react';
+import {
+	Navbar,
+	NavbarBrand,
+	Nav,
+	UncontrolledDropdown,
+	DropdownToggle,
+	DropdownMenu,
+	DropdownItem
+} from 'reactstrap';
 
-export class Navbar extends Component {
+/*
+props = {
+    isLoggedIn: boolean,
+    username: string
+};
+}
+*/
+import '../../Styles/Navbar.css';
+import { Logout } from '../../Util/Logout';
+
+export class NavBar extends Component {
+	state = {
+		username: this.props.username,
+		isLoggedIn: this.props.isLoggedIn,
+		...this.props
+	};
+	loggedInItems = (
+		<>
+			<DropdownItem>Profile</DropdownItem>
+			<DropdownItem
+				onClick={() => Logout(this.state.token, this.state.username)}>
+				Logout
+			</DropdownItem>
+		</>
+	);
+	notLoggedInItems = (
+		<>
+			<DropdownItem href='/login'>Login</DropdownItem>
+			<DropdownItem href='/signup'>Signup</DropdownItem>
+		</>
+	);
 	render() {
 		return (
 			<>
-				<nav className='navbar navbar-expand-lg navbar-dark bg-dark'>
-					<a className='navbar-brand' href='#'>
-						Navbar
-					</a>
-					<button
-						className='navbar-toggler'
-						type='button'
-						data-toggle='collapse'
-						data-target='#navbarColor02'
-						aria-controls='navbarColor02'
-						aria-expanded='false'
-						aria-label='Toggle navigation'>
-						<span className='navbar-toggler-icon' />
-					</button>
-
-					<div
-						className='collapse navbar-collapse'
-						id='navbarColor02'>
-						<ul className='navbar-nav mr-auto'>
-							<li className='nav-item active'>
-								<a className='nav-link' href='#'>
-									Home
-								</a>
-							</li>
-							<li className='nav-item'>
-								<a className='nav-link' href='#'>
-									Features
-								</a>
-							</li>
-							<li className='nav-item'>
-								<a className='nav-link' href='#'>
-									Pricing
-								</a>
-							</li>
-							<li className='nav-item'>
-								<a className='nav-link' href='#'>
-									About
-								</a>
-							</li>
-						</ul>
-						<form className='form-inline my-2 my-lg-0'>
-							<input
-								className='form-control mr-sm-2'
-								type='text'
-								placeholder='Search'
-							/>
-							<button
-								className='btn btn-secondary my-2 my-sm-0'
-								type='submit'>
-								Search
-							</button>
-						</form>
-					</div>
-				</nav>
+				<Navbar color='dark' dark expand='md'>
+					<NavbarBrand href='/'>Home</NavbarBrand>
+					<Nav className='ml-auto' navbar>
+						<UncontrolledDropdown nav inNavbar>
+							<DropdownToggle nav caret>
+								{this.state.username}
+							</DropdownToggle>
+							<DropdownMenu right>
+								{this.state.isLoggedIn
+									? this.loggedInItems
+									: this.notLoggedInItems}
+							</DropdownMenu>
+						</UncontrolledDropdown>
+					</Nav>
+				</Navbar>
 			</>
 		);
 	}
